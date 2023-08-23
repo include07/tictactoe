@@ -11,6 +11,7 @@ class Board
     @repeat = true
     @p1 = nil
     @p2 = nil
+    @who_turn = 1
   end
 
   # set player 1 and 2 symbols
@@ -24,6 +25,7 @@ class Board
       self.p1 = 'o'
       self.p2 = 'x'
     end
+    puts 'Let the game begin!!'
   end
 
   # output the grid
@@ -34,4 +36,31 @@ class Board
       end
     end
   end
+
+  # get player choice and output updated board
+  # rubocop:disable Metrics/MethodLength
+  # rubocop:disable Metrics/AbcSize
+  def turn
+    draw_grid
+    choice = nil
+    loop do
+      puts "player#{who_turn} it's your turn, choose a number (1-9)"
+      choice = gets.chomp.to_i
+      # Check if the entered number exists in the corresponding grid cell.
+      unless (1..9).include?(choice) && grid[(choice - 1) / 3][(choice - 1) % 3] == choice.to_s
+        puts "Invalid choice. Please enter a number between 1 and 9 that hasn't been chosen yet."
+        next
+      end
+      break
+    end
+    grid[(choice - 1) / 3][(choice - 1) % 3] = who_turn == 1 ? p1 : p2
+    self.who_turn = who_turn == 1 ? 2 : 1
+  end
+  # rubocop:enable Metrics/AbcSize
+  # rubocop:enable Metrics/MethodLength
 end
+
+# start the game
+board = Board.new
+board.setup
+board.turn while board.repeat
